@@ -7,12 +7,7 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "build:ui": "cd phonebook-frontend && npm install && npm run build",
-    "git:add": "git add .",
-    "git:commit": "git commit -m 'Deploy with updated frontend'",
-    "deploy:part1": "npm run build:ui",
-    "deploy:part2": "npm run git:add && npm run git:commit",
-    "deploy:part3": "npm run dev",
-    "deploy": "npm run deploy:part1 && npm run deploy:part2 && npm run deploy:part3",
+    "deploy": "npm run build:ui && cp -r dist ../",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
