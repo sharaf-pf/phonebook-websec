@@ -6,15 +6,13 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
+    "build:ui": "cd phonebook-frontend && npm install && npm run build && cp -r dist ../",
+    "deploy": "npm run build:ui && git add . && git commit -m 'Deploy with updated frontend' && git push",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "cors": "^2.8.5",
     "express": "^4.17.1",
-    "node-fetch": "^2.7.0"
+    "cors": "^2.8.5"
   },
   "devDependencies": {
     "nodemon": "^2.0.7"
