@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "build:ui": "cd phonebook-frontend && npm install && npm run build && cp -r dist ../",
+    "build:ui": "cd phonebook-frontend && npm install && npm run build",
     "git:add": "git add .",
     "git:commit": "git commit -m 'Deploy with updated frontend'",
     "deploy:part1": "npm run build:ui",
