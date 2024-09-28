@@ -87,21 +87,17 @@ app.post('/api/persons', (request, response, next) => {
     .catch(error => next(error))
 });
 
-app.get('/api/persons/:id', async (request, response) => {
+app.get('/api/persons/:id', async (request, response, next) => {
   try {
     const id = request.params.id;
     
-    // Trigger 400 Bad Request for specific ID
+    // Test error scenarios
     if (id === 'badrequest') {
       return response.status(400).json({ error: 'Bad Request: Invalid ID format' });
     }
-    
-    // Trigger 404 Not Found for specific ID
     if (id === 'notfound') {
       return response.status(404).json({ error: 'Person not found' });
     }
-    
-    // Trigger 500 Internal Server Error for specific ID
     if (id === 'servererror') {
       throw new Error('Intentional 500 Internal Server Error');
     }
@@ -110,23 +106,13 @@ app.get('/api/persons/:id', async (request, response) => {
     if (person) {
       response.json(person);
     } else {
-      response.status(404).end();
+      response.status(404).json({ error: 'Person not found' });
     }
   } catch (error) {
-    console.error(error);
-    response.status(500).json({ error: 'Internal Server Error' });
+    next(error);
   }
 });
 
-// New route to demonstrate 403 Forbidden
-app.get('/api/admin', (request, response) => {
-  response.status(403).json({ error: 'Forbidden: You do not have access to this resource' });
-});
-
-// New route to demonstrate 401 Unauthorized
-app.get('/api/private', (request, response) => {
-  response.status(401).json({ error: 'Unauthorized: Authentication required' });
-});
 
 const PORT = process.env.PORT || 3001;
 
@@ -144,3 +130,17 @@ app.listen(PORT, () => {
   // Start self-ping
   setInterval(selfPing, 10 * 60 * 1000) // 10 minutes
 })
+
+
+// Add this at the end of your file
+app.use((error, request, response, next) => {
+  console.error(error.message);
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' });
+  } else if (error.name === 'ValidationError') {
+    return response.status(400).json({ error: error.message });
+  }
+
+  response.status(500).json({ error: 'Internal Server Error' });
+});
