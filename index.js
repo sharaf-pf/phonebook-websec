@@ -128,8 +128,6 @@ app.get('/api/private', (request, response) => {
   response.status(401).json({ error: 'Unauthorized: Authentication required' });
 });
 
-app.use(errorHandler)
-
 const PORT = process.env.PORT || 3001;
 
 // Self-ping function
