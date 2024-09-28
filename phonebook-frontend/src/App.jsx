@@ -132,7 +132,7 @@ const App = () => {
 
   return (
     <div style={appStyle}>
-      <h2 style={titleStyle}>PhoneBuck</h2>
+      <h2 style={titleStyle}>PhoneBook-DB</h2>
       <Search persons={persons} setFilteredPersons={setFilteredPersons} />
       <form onSubmit={addName} style={formStyle}>
         <div>
