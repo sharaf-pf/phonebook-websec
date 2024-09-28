@@ -57,6 +57,18 @@ app.post('/api/persons', (request, response) => {
 });
 
 const PORT = process.env.PORT || 3001;
+
+// Self-ping function
+const selfPing = () => {
+  const url = process.env.RENDER_EXTERNAL_URL || `http://localhost:${PORT}`
+  fetch(url)
+    .then(() => console.log('Self-ping successful'))
+    .catch(err => console.error('Self-ping failed:', err))
+}
+
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+  console.log(`Server running on port ${PORT}`)
+  
+  // Start self-ping
+  setInterval(selfPing, 10 * 60 * 1000) // 10 minutes
+})
