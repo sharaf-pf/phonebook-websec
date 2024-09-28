@@ -6,16 +6,12 @@ app.use(cors());
 app.use(express.json());
 
 let persons = [
-  { id: 1, name: 'Abdelrahman Eliaskary', number: '010-12345678' },
-  { id: 2, name: 'Ahmed Amin', number: '011-98765432' },
-  { id: 3, name: 'Amr El Mougy', number: '012-45678910' },
-  { id: 4, name: 'Dana Alkhouri', number: '015-11223344' },
-  { id: 5, name: 'Freddy Sarwat', number: '010-56789012' },
-  { id: 6, name: 'Michael Salieb', number: '011-99887766' },
-  { id: 7, name: 'Mohamed Abdallah', number: '012-55443322' },
-  { id: 8, name: 'Amany Shehata', number: '010-77889900' },
-  { id: 9, name: 'Ali Fakhredin', number: '011-66554433' },
-  { id: 10, name: 'Jannah Mohamed Soliman', number: '015-44332211' },
+  { id: 1, name: 'Eliaskary', number: '010-12345678' },
+  { id: 2, name: 'Amin', number: '011-98765432' },
+  { id: 3, name: 'El Mougy', number: '012-45678910' },
+  { id: 4, name: 'Alkhouri', number: '015-11223344' },
+  { id: 5, name: 'Sarwat', number: '010-56789012' },
+  { id: 6, name: 'Miniesy', number: '011-99887766' },
 ];
 
 app.get('/api/persons', (request, response) => {
