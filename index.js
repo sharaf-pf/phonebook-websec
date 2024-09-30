@@ -1,21 +1,21 @@
-require('dotenv').config()
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 
 const app = express();
-app.use(express.static('dist'))
+app.use(express.static('dist'));
 app.use(cors());
 app.use(express.json());
 
-const mongoUrl = process.env.MONGODB_URI
+const mongoUrl = process.env.MONGODB_URI;
 mongoose.connect(mongoUrl)
   .then(() => {
-    console.log('connected to MongoDB')
+    console.log('connected to MongoDB');
   })
   .catch((error) => {
-    console.log('error connecting to MongoDB:', error.message)
-  })
+    console.log('error connecting to MongoDB:', error.message);
+  });
 
 const personSchema = new mongoose.Schema({
   name: {
@@ -28,44 +28,49 @@ const personSchema = new mongoose.Schema({
     required: true,
     minlength: 8
   }
-})
+});
 
 personSchema.set('toJSON', {
   transform: (document, returnedObject) => {
-    returnedObject.id = returnedObject._id.toString()
-    delete returnedObject._id
-    delete returnedObject.__v
+    returnedObject.id = returnedObject._id.toString();
+    delete returnedObject._id;
+    delete returnedObject.__v;
   }
-})
-
-const Person = mongoose.model('Person', personSchema)
-
-app.get('/api/persons', (request, response) => {
-  Person.find({}).then(persons => {
-    response.json(persons)
-  })
 });
 
+const Person = mongoose.model('Person', personSchema);
+
+// Route to get all persons
+app.get('/api/persons', (request, response) => {
+  Person.find({})
+    .then(persons => {
+      response.json(persons);
+    });
+});
+
+// Route to get a person by ID
 app.get('/api/persons/:id', (request, response, next) => {
   Person.findById(request.params.id)
     .then(person => {
       if (person) {
-        response.json(person)
+        response.json(person);
       } else {
-        response.status(404).end()
+        response.status(404).end();
       }
     })
-    .catch(error => next(error))
+    .catch(error => next(error)); // Pass the error to the error handler
 });
 
+// Route to delete a person by ID
 app.delete('/api/persons/:id', (request, response, next) => {
   Person.findByIdAndRemove(request.params.id)
     .then(() => {
-      response.status(204).end()
+      response.status(204).end();
     })
-    .catch(error => next(error))
+    .catch(error => next(error)); // Pass the error to the error handler
 });
 
+// Route to add a new person
 app.post('/api/persons', (request, response, next) => {
   const body = request.body;
 
@@ -82,65 +87,36 @@ app.post('/api/persons', (request, response, next) => {
 
   person.save()
     .then(savedPerson => {
-      response.json(savedPerson)
+      response.json(savedPerson);
+      console.log(savedPerson, " --- saved successfully");
     })
-    .catch(error => next(error))
+    .catch(error => next(error)); // Pass the error to the error handler
 });
-
-app.get('/api/persons/:id', async (request, response, next) => {
-  try {
-    const id = request.params.id;
-    
-    // Test error scenarios
-    if (id === 'badrequest') {
-      return response.status(400).json({ error: 'Bad Request: Invalid ID format' });
-    }
-    if (id === 'notfound') {
-      return response.status(404).json({ error: 'Person not found' });
-    }
-    if (id === 'servererror') {
-      throw new Error('Intentional 500 Internal Server Error');
-    }
-
-    const person = await Person.findById(id);
-    if (person) {
-      response.json(person);
-    } else {
-      response.status(404).json({ error: 'Person not found' });
-    }
-  } catch (error) {
-    next(error);
-  }
-});
-
-
-const PORT = process.env.PORT || 3001;
 
 // Self-ping function
 const selfPing = () => {
-  const url = process.env.RENDER_EXTERNAL_URL || `http://localhost:${PORT}`
+  const url = process.env.RENDER_EXTERNAL_URL || `http://localhost:${PORT}`;
   fetch(url)
     .then(() => console.log('Self-ping successful'))
-    .catch(err => console.error('Self-ping failed:', err))
-}
+    .catch(err => console.error('Self-ping failed:', err));
+};
 
+// Start the server
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`)
-  
+  console.log(`Server running on port ${PORT}`);
+
   // Start self-ping
-  setInterval(selfPing, 10 * 60 * 1000) // 10 minutes
-})
+  setInterval(selfPing, 10 * 60 * 1000); // 10 minutes
+});
 
-
-// Add this at the end of your file
+// Error handling middleware
 app.use((error, request, response, next) => {
   console.error(error.message);
 
-  if (error.name === 'CastError') {
+  if (error.name === 'CastError' && error.kind === 'ObjectId') {
     return response.status(400).send({ error: 'malformatted id' });
-  } else if (error.name === 'ValidationError') {
-    return response.status(400).json({ error: error.message });
   }
 
-  response.status(500).json({ error: 'Internal Server Error' });
+  next(error); // Pass the error to default express error handler if necessary
 });
